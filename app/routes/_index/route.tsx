@@ -1,15 +1,29 @@
-import type { MetaFunction } from '@remix-run/node';
+import {
+  json,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { getUserId } from '~/utils/sessions.server';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'Arca' },
-    { name: 'description', content: 'Welcome to Arca!' },
+    { title: 'Training Split Builder' },
+    { name: 'description', content: 'Welcome to Training Split Builder!' },
   ];
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await getUserId(request);
+  return json({ userId });
+}
+
 export default function Index() {
+  const { userId } = useLoaderData<typeof loader>();
+  console.log(userId);
+
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
+    <div>
       <h1>Welcome to Remix</h1>
       <ul>
         <li>
