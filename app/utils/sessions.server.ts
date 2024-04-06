@@ -1,15 +1,17 @@
 import { createCookieSessionStorage, redirect } from '@remix-run/node';
 import { env } from '~/config/env';
+import { SelectMesocycle } from '~/db/schema/mesocycles';
 
 type SessionData = {
   userId: number;
+  mesocycles: Pick<SelectMesocycle, 'id' | 'name' | 'createdAt'>[];
 };
 
 type SessionFlashData = {
   error: string;
 };
 
-const ONE_YEAR = 60 * 60 * 24 * 365;
+const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
 
 export const sessionStorage = createCookieSessionStorage<
   SessionData,
@@ -18,7 +20,7 @@ export const sessionStorage = createCookieSessionStorage<
   cookie: {
     name: '__session',
     httpOnly: true,
-    maxAge: ONE_YEAR,
+    maxAge: TEN_YEARS,
     path: '/',
     sameSite: 'strict',
     secrets: [env.SESSION_SECRET_1],
@@ -34,19 +36,12 @@ export async function getSession(request: Request) {
   return session;
 }
 
-export async function getUserId(request: Request) {
-  const session = await sessionStorage.getSession(
-    request.headers.get('Cookie'),
-  );
-
-  return session.get('userId');
-}
-
 export async function requireUserId(
   request: Request,
   redirectUrl = '/sign-in',
 ) {
-  const userId = await getUserId(request);
+  const session = await getSession(request);
+  const userId = session.get('userId');
 
   if (!userId) {
     const url = new URL(request.url);
