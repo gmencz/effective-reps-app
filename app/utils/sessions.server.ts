@@ -1,10 +1,12 @@
 import { Session, createCookieSessionStorage, redirect } from '@remix-run/node';
 import { env } from '~/config/env';
+import { SelectExercise } from '~/db/schema/exercises';
 import { SelectMesocycle } from '~/db/schema/mesocycles';
 
 type SessionData = {
   userId: number;
   mesocycles: Pick<SelectMesocycle, 'id' | 'name' | 'createdAt'>[];
+  exercises: Pick<SelectExercise, 'id' | 'name' | 'createdAt'>[];
 };
 
 type SessionFlashData = {
