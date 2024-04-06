@@ -1,4 +1,4 @@
-import { createCookieSessionStorage, redirect } from '@remix-run/node';
+import { Session, createCookieSessionStorage, redirect } from '@remix-run/node';
 import { env } from '~/config/env';
 import { SelectMesocycle } from '~/db/schema/mesocycles';
 
@@ -11,7 +11,9 @@ type SessionFlashData = {
   error: string;
 };
 
-const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
+export type SessionType = Session<SessionData, SessionFlashData>;
+
+const TEN_YEARS_IN_SECONDS = 315_532_800;
 
 export const sessionStorage = createCookieSessionStorage<
   SessionData,
@@ -20,7 +22,7 @@ export const sessionStorage = createCookieSessionStorage<
   cookie: {
     name: '__session',
     httpOnly: true,
-    maxAge: TEN_YEARS,
+    maxAge: TEN_YEARS_IN_SECONDS,
     path: '/',
     sameSite: 'strict',
     secrets: [env.SESSION_SECRET_1],

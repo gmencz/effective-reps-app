@@ -2,12 +2,11 @@ import { format, parseISO } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { db } from '~/db/db';
 import { SelectMesocycle, mesocycles } from '~/db/schema/mesocycles';
-import { getSession } from '~/utils/sessions.server';
+import { SessionType } from '~/utils/sessions.server';
 
 export async function getUserMesocycles(
-  request: Request,
+  session: SessionType,
 ): Promise<Pick<SelectMesocycle, 'id' | 'name' | 'createdAt'>[]> {
-  const session = await getSession(request);
   const userId = session.get('userId');
   if (userId) {
     // Fetch user mesocycles from database
@@ -25,20 +24,13 @@ export async function getUserMesocycles(
   }
 
   // Get user mesocycles from session (user hasn't logged in)
-  const userMesocycles = session.get('mesocycles') || [
-    {
-      id: 1,
-      name: 'Test Meso 1',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      name: 'Test Meso 2',
-      createdAt: new Date().toISOString(),
-    },
-  ];
-
-  return userMesocycles.map(formatMesocycleDates);
+  const userMesocycles = session.get('mesocycles') || [];
+  return userMesocycles
+    .sort(
+      (a, b) =>
+        new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf(),
+    )
+    .map(formatMesocycleDates);
 }
 
 function formatMesocycleDates(
