@@ -34,3 +34,7 @@ Make sure to deploy the output of `npm run build`
 
 - `build/server`
 - `build/client`
+
+### Scripts
+
+All scripts in the `scripts` directory are to be executed from an npm script.
