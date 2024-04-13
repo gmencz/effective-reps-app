@@ -7,6 +7,9 @@ import { getExercisesForSelect } from './get-exercises-for-select.server';
 import { AddExerciseForm } from './add-exercise-form';
 import { parseNumberParam } from '~/utils/requests.server';
 import { addExercise } from './add-exercise.server';
+import { ExercisesList } from './exercises-list';
+import { StartSessionForm } from './start-session-form';
+import { addSet } from './add-set.server';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { userId } = await requireUserId(request);
@@ -31,7 +34,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export enum ActionIntent {
+  StartSession = 'startSession',
   AddExercise = 'addExercise',
+  AddSet = 'addSet',
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -83,6 +88,76 @@ export async function action({ request, params }: ActionFunctionArgs) {
       });
     }
 
+    case ActionIntent.AddSet: {
+      const exerciseId = Number(formData.get('exerciseId'));
+      const repRange = formData.get('repRange');
+      const weight = Number(formData.get('weight'));
+      const rir = Number(formData.get('rir'));
+      const restSeconds = Number(formData.get('restSeconds'));
+      const notes = formData.get('notes');
+
+      if (Number.isNaN(exerciseId)) {
+        session.flash('error', 'Exercise id is invalid');
+        return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        });
+      }
+
+      if (typeof repRange !== 'string') {
+        session.flash('error', 'Rep range is required');
+        return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        });
+      }
+
+      if (Number.isNaN(rir)) {
+        session.flash('error', 'RIR is invalid');
+        return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        });
+      }
+
+      try {
+        await addSet(userId, id, exerciseId, {
+          notes: notes as string | null,
+          repRange: repRange,
+          weight: Number.isNaN(weight) ? null : weight,
+          restSeconds: Number.isNaN(restSeconds) ? null : restSeconds,
+          rir: rir,
+        });
+      } catch (error) {
+        console.error('addSet() had an unexpected error', error);
+        session.flash('error', 'Something went wrong adding the set');
+        return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        });
+      }
+
+      return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+        headers: {
+          'Set-Cookie': await sessionStorage.commitSession(session),
+        },
+      });
+    }
+
+    case ActionIntent.StartSession: {
+      // TODO
+
+      return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+        headers: {
+          'Set-Cookie': await sessionStorage.commitSession(session),
+        },
+      });
+    }
+
     default:
       session.flash('error', 'Invalid or missing action intent');
       return redirect(`/mesocycles/${mesocycleId}/${id}`, {
@@ -101,21 +176,9 @@ export default function MesocycleDay() {
       <h1>{day.name}</h1>
       <p>{day.notes}</p>
 
+      <StartSessionForm />
       <AddExerciseForm />
-
-      <ol>
-        {day.exercises.map((exercise) => (
-          <li key={exercise.id}>
-            <h3>{exercise.exercise.name}</h3>
-
-            <ol>
-              {exercise.sets.map((set) => (
-                <li key={set.id}>{set.repRange}</li>
-              ))}
-            </ol>
-          </li>
-        ))}
-      </ol>
+      <ExercisesList />
     </>
   );
 }

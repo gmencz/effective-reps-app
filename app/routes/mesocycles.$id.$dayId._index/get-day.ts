@@ -13,7 +13,18 @@ export async function getDay(id: number, userId: number) {
         select: {
           id: true,
           exercise: { select: { name: true } },
-          sets: { select: { id: true, repRange: true } },
+          notes: true,
+          sets: {
+            select: {
+              id: true,
+              number: true,
+              repRange: true,
+              weight: true,
+              rir: true,
+              restSeconds: true,
+              notes: true,
+            },
+          },
         },
         orderBy: {
           number: 'asc',

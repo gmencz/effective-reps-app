@@ -53,7 +53,7 @@ model MesocycleDayExerciseSet {
   repRange    String               @map("rep_range")
   weight      Float?
   rir         Int
-  restSeconds Int                  @map("rest_seconds")
+  restSeconds Int?                 @map("rest_seconds")
   notes       String?
   exercise    MesocycleDayExercise @relation(fields: [exerciseId], references: [id])
   exerciseId  Int                  @map("exercise_id")

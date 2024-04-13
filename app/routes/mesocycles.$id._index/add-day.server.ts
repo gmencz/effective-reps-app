@@ -6,16 +6,19 @@ type NewDay = {
 };
 
 export async function addDay(userId: number, newDay: NewDay) {
-  const existingDays = await prisma.mesocycleDay.findMany({
+  const lastDay = await prisma.mesocycleDay.findFirst({
     where: {
       AND: [{ mesocycle: { userId } }, { mesocycleId: newDay.mesocycleId }],
     },
     select: {
       order: true,
     },
+    orderBy: {
+      order: 'desc',
+    },
   });
 
-  const order = existingDays.at(-1)?.order || 1;
+  const order = (lastDay?.order || 0) + 1;
 
   await prisma.mesocycleDay.create({
     data: {

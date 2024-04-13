@@ -6,16 +6,19 @@ type AddExercise = {
 };
 
 export async function addExercise(userId: number, addExercise: AddExercise) {
-  const existingDayExercises = await prisma.mesocycleDayExercise.findMany({
+  const lastExercise = await prisma.mesocycleDayExercise.findFirst({
     where: {
       AND: [{ day: { mesocycle: { userId } } }, { dayId: addExercise.dayId }],
     },
     select: {
       number: true,
     },
+    orderBy: {
+      number: 'desc',
+    },
   });
 
-  const number = existingDayExercises.at(-1)?.number || 1;
+  const number = (lastExercise?.number || 0) + 1;
 
   await prisma.mesocycleDayExercise.create({
     data: {
