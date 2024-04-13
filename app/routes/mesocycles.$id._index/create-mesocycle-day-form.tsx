@@ -2,10 +2,10 @@ import { useLoaderData } from '@remix-run/react';
 import { ActionIntent, loader } from './route';
 
 export function CreateMesocycleDayForm() {
-  const { userMesocycle } = useLoaderData<typeof loader>();
+  const { mesocycle } = useLoaderData<typeof loader>();
 
   return (
-    <form method="post" action={`/mesocycles/${userMesocycle.id}?index`}>
+    <form method="post" action={`/mesocycles/${mesocycle.id}?index`}>
       <input
         type="hidden"
         name="_intent"

@@ -1,5 +1,6 @@
-import { type MetaFunction } from '@remix-run/node';
+import { LoaderFunctionArgs, type MetaFunction } from '@remix-run/node';
 import { Link } from '@remix-run/react';
+import { requireUserId } from '~/utils/sessions.server';
 
 export const meta: MetaFunction = () => {
   return [
@@ -8,11 +9,14 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { userId } = await requireUserId(request);
+  return { userId };
+}
+
 const navigation = [
   { label: 'Mesocycles', to: '/mesocycles' },
   { label: 'Exercises', to: '/exercises' },
-  { label: 'History', to: '/history' },
-  { label: 'Analytics', to: '/analytics' },
 ];
 
 export default function Index() {

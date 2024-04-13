@@ -1,71 +1,33 @@
-import { redirect } from '@remix-run/node';
-import { and, eq } from 'drizzle-orm';
-import { db } from '~/db/db';
-import { mesocycles } from '~/db/schema/mesocycles';
-import { mesocyclesDays } from '~/db/schema/mesocycles-days';
-import { mesocyclesDaysExercises } from '~/db/schema/mesocycles-days-exercises';
-import { TypedSession } from '~/utils/sessions.server';
+import { prisma } from '~/utils/prisma.server';
 
 type AddExercise = {
   id: number;
-  mesocycleId: number;
   mesocycleDayId: number;
 };
 
 export async function addExerciseToMesocycleDay(
-  session: TypedSession,
+  userId: number,
   addExercise: AddExercise,
 ) {
-  const userId = session.get('userId');
-  if (userId) {
-    const existingMesocycleRows = await db
-      .select({
-        day: { number: mesocyclesDays.number },
-      })
-      .from(mesocycles)
-      .where(
-        and(
-          eq(mesocycles.id, addExercise.mesocycleId),
-          eq(mesocycles.userId, userId),
-        ),
-      )
-      .leftJoin(mesocyclesDays, eq(mesocycles.id, mesocyclesDays.mesocycleId));
+  const existingDayExercises = await prisma.mesocycleDayExercise.findMany({
+    where: {
+      AND: [
+        { day: { mesocycle: { userId } } },
+        { dayId: addExercise.mesocycleDayId },
+      ],
+    },
+    select: {
+      number: true,
+    },
+  });
 
-    if (existingMesocycleRows.length === 0) {
-      session.flash('error', 'Mesocycle not found');
-      throw redirect('/mesocycles', {
-        headers: {
-          'Set-Cookie': await sessionStorage.commitSession(session),
-        },
-      });
-    }
+  const number = existingDayExercises.at(-1)?.number || 1;
 
-    const existingMesocycleDays = existingMesocycleRows.reduce<
-      { number: number }[]
-    >((acc, row) => {
-      const day = row.day;
-      if (day) {
-        acc.push(day);
-      }
-
-      return acc;
-    }, []);
-
-    const existingMesocycleDayExercises = await db
-      .select({ number: mesocyclesDays.number })
-      .from(mesocyclesDaysExercises)
-      .where(eq(mesocyclesDays.mesocycleId, newMesocycleDay.mesocycleId))
-      .orderBy(mesocyclesDays.number)
-      .limit(1);
-
-    const lastMesocycleDay = existingMesocycleDays.at(-1);
-
-    await db.insert(mesocyclesDays).values({
-      name: newMesocycleDay.name,
-      mesocycleId: newMesocycleDay.mesocycleId,
-      number: (lastMesocycleDay?.number || 0) + 1,
-    });
-
-    return;
-  }
+  await prisma.mesocycleDayExercise.create({
+    data: {
+      exerciseId: addExercise.id,
+      dayId: addExercise.mesocycleDayId,
+      number,
+    },
+  });
 }

@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: effective_reps_db
+      POSTGRES_USER: effective_reps_user
+      POSTGRES_PASSWORD: effective_reps_pw
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data

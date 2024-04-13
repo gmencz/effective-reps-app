@@ -1,19 +1,19 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect, useLoaderData } from '@remix-run/react';
-import { getSession, sessionStorage } from '~/utils/sessions.server';
-import { getUserExercises } from './get-user-exercises.server';
+import { requireUserId, sessionStorage } from '~/utils/sessions.server';
+import { getExercises } from './get-exercises.server';
 import { createExercise } from './create-exercise.server';
 import { CreateExerciseForm } from './create-exercise-form';
-import { UserExercisesList } from './user-exercises-list';
+import { ExercisesList } from './exercises-list';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const session = await getSession(request);
-  const userExercises = await getUserExercises(session);
-  return json({ userExercises });
+  const { userId } = await requireUserId(request);
+  const exercises = await getExercises(userId);
+  return json({ exercises });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const session = await getSession(request);
+  const { userId, session } = await requireUserId(request);
   const formData = await request.formData();
   const exerciseName = formData.get('exerciseName');
   if (typeof exerciseName !== 'string') {
@@ -26,7 +26,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await createExercise(session, { name: exerciseName });
+    await createExercise(userId, { name: exerciseName });
   } catch (error) {
     console.error('createExercise() had an unexpected error', error);
     session.flash('error', 'Something went wrong creating the exercise');
@@ -45,13 +45,13 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Exercises() {
-  const { userExercises } = useLoaderData<typeof loader>();
+  const { exercises } = useLoaderData<typeof loader>();
 
   return (
     <>
       <h1>Exercises</h1>
       <CreateExerciseForm />
-      <UserExercisesList userExercises={userExercises} />
+      <ExercisesList exercises={exercises} />
     </>
   );
 }

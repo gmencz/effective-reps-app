@@ -1,22 +1,8 @@
 import { Session, createCookieSessionStorage, redirect } from '@remix-run/node';
-import { env } from '~/config/env';
-import { SelectExercise } from '~/db/schema/exercises';
-import { SelectMesocycle } from '~/db/schema/mesocycles';
-import { SelectMesocycleDay } from '~/db/schema/mesocycles-days';
-import { SelectMesocycleDayExercise } from '~/db/schema/mesocycles-days-exercises';
-import { SelectMesocycleDayExerciseSet } from '~/db/schema/mesocycles-days-exercises-sets';
+import { env } from './env.server';
 
 type SessionData = {
   userId: number;
-  mesocycles: (Omit<SelectMesocycle, 'userId'> & {
-    days: (Omit<SelectMesocycleDay, 'mesocycleId'> & {
-      exercises: (Omit<SelectMesocycleDayExercise, 'mesocycleDayId'> & {
-        name: string;
-        sets: Omit<SelectMesocycleDayExerciseSet, 'mesocycleDayExerciseId'>[];
-      })[];
-    })[];
-  })[];
-  exercises: Omit<SelectExercise, 'userId'>[];
 };
 
 type SessionFlashData = {
@@ -25,7 +11,7 @@ type SessionFlashData = {
 
 export type TypedSession = Session<SessionData, SessionFlashData>;
 
-const TEN_YEARS_IN_SECONDS = 315_532_800;
+const ONE_YEAR_IN_SECONDS = 31_536_000;
 
 export const sessionStorage = createCookieSessionStorage<
   SessionData,
@@ -34,7 +20,7 @@ export const sessionStorage = createCookieSessionStorage<
   cookie: {
     name: '__session',
     httpOnly: true,
-    maxAge: TEN_YEARS_IN_SECONDS,
+    maxAge: ONE_YEAR_IN_SECONDS,
     path: '/',
     sameSite: 'strict',
     secrets: [env.SESSION_SECRET_1],
@@ -63,5 +49,5 @@ export async function requireUserId(
     throw redirect(`${redirectUrl}?to=${encodeURIComponent(pathname)}`);
   }
 
-  return userId;
+  return { userId, session };
 }

@@ -6,23 +6,23 @@ type Props = {
 };
 
 export function AddExerciseToMesocycleDayForm({ mesocycleDayId }: Props) {
-  const { userMesocycle, userExercisesForSelect } =
-    useLoaderData<typeof loader>();
+  const { mesocycle, exercisesForSelect } = useLoaderData<typeof loader>();
 
   return (
-    <form method="post" action={`/mesocycles/${userMesocycle.id}?index`}>
+    <form method="post" action={`/mesocycles/${mesocycle.id}?index`}>
       <input
         type="hidden"
         name="_intent"
         value={ActionIntent.AddExerciseToMesocycleDay}
       />
+
       <input type="hidden" name="mesocycleDayId" value={mesocycleDayId} />
 
       <label htmlFor="exerciseId">Select exercise</label>
       <select name="exerciseId" id="exerciseId">
-        {userExercisesForSelect.map((exercise) => (
+        {exercisesForSelect.map((exercise) => (
           <option key={exercise.id} value={exercise.id}>
-            {exercise.name}
+            {exercise.name} - {exercise.unilateral}
           </option>
         ))}
       </select>
