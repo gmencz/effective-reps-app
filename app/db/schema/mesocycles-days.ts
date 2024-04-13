@@ -5,6 +5,7 @@ import { sql } from 'drizzle-orm';
 export const mesocyclesDays = sqliteTable('mesocycles_days', {
   id: integer('id').primaryKey(),
   name: text('name').notNull(),
+  number: integer('number').notNull(),
   notes: text('notes'),
   mesocycleId: integer('mesocycle_id')
     .notNull()

@@ -1,12 +1,11 @@
-import { format, parseISO } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { db } from '~/db/db';
 import { SelectExercise, exercises } from '~/db/schema/exercises';
 import { TypedSession } from '~/utils/sessions.server';
 
-export async function getUserExercises(
+export async function getUserExercisesForSelect(
   session: TypedSession,
-): Promise<Pick<SelectExercise, 'id' | 'name' | 'unilateral' | 'createdAt'>[]> {
+): Promise<Pick<SelectExercise, 'id' | 'name' | 'unilateral'>[]> {
   const userId = session.get('userId');
   if (userId) {
     // Fetch user exercises from database
@@ -21,7 +20,7 @@ export async function getUserExercises(
       .where(eq(exercises.userId, userId))
       .orderBy(desc(exercises.createdAt));
 
-    return userExercises.map(formatExerciseDates);
+    return userExercises.map(mapExercise);
   }
 
   // Get user exercises from session (user hasn't logged in)
@@ -31,14 +30,15 @@ export async function getUserExercises(
       (a, b) =>
         new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf(),
     )
-    .map(formatExerciseDates);
+    .map(mapExercise);
 }
 
-function formatExerciseDates(
+function mapExercise(
   exercise: Pick<SelectExercise, 'id' | 'name' | 'unilateral' | 'createdAt'>,
-): Pick<SelectExercise, 'id' | 'name' | 'unilateral' | 'createdAt'> {
+): Pick<SelectExercise, 'id' | 'name' | 'unilateral'> {
   return {
-    ...exercise,
-    createdAt: format(parseISO(exercise.createdAt), 'MM/dd/yyyy'),
+    id: exercise.id,
+    name: exercise.name,
+    unilateral: exercise.unilateral,
   };
 }

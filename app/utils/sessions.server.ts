@@ -2,18 +2,28 @@ import { Session, createCookieSessionStorage, redirect } from '@remix-run/node';
 import { env } from '~/config/env';
 import { SelectExercise } from '~/db/schema/exercises';
 import { SelectMesocycle } from '~/db/schema/mesocycles';
+import { SelectMesocycleDay } from '~/db/schema/mesocycles-days';
+import { SelectMesocycleDayExercise } from '~/db/schema/mesocycles-days-exercises';
+import { SelectMesocycleDayExerciseSet } from '~/db/schema/mesocycles-days-exercises-sets';
 
 type SessionData = {
   userId: number;
-  mesocycles: Pick<SelectMesocycle, 'id' | 'name' | 'createdAt'>[];
-  exercises: Pick<SelectExercise, 'id' | 'name' | 'createdAt'>[];
+  mesocycles: (Omit<SelectMesocycle, 'userId'> & {
+    days: (Omit<SelectMesocycleDay, 'mesocycleId'> & {
+      exercises: (Omit<SelectMesocycleDayExercise, 'mesocycleDayId'> & {
+        name: string;
+        sets: Omit<SelectMesocycleDayExerciseSet, 'mesocycleDayExerciseId'>[];
+      })[];
+    })[];
+  })[];
+  exercises: Omit<SelectExercise, 'userId'>[];
 };
 
 type SessionFlashData = {
   error: string;
 };
 
-export type SessionType = Session<SessionData, SessionFlashData>;
+export type TypedSession = Session<SessionData, SessionFlashData>;
 
 const TEN_YEARS_IN_SECONDS = 315_532_800;
 

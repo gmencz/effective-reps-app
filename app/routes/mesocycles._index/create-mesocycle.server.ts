@@ -1,13 +1,13 @@
 import { db } from '~/db/db';
 import { mesocycles } from '~/db/schema/mesocycles';
-import { SessionType } from '~/utils/sessions.server';
+import { TypedSession } from '~/utils/sessions.server';
 
 export type NewMesocycle = {
   name: string;
 };
 
 export async function createMesocycle(
-  session: SessionType,
+  session: TypedSession,
   newMesocycle: NewMesocycle,
 ) {
   const userId = session.get('userId');
@@ -26,6 +26,7 @@ export async function createMesocycle(
           ? userMesocycles[userMesocycles.length - 1].id + 1
           : 1,
       name: newMesocycle.name,
+      days: [],
       createdAt: new Date().toISOString(),
     },
   ]);

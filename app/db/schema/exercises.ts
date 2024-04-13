@@ -5,6 +5,7 @@ import { users } from './users';
 export const exercises = sqliteTable('exercises', {
   id: integer('id').primaryKey(),
   name: text('name').notNull(),
+  unilateral: integer('unilateral', { mode: 'boolean' }).default(false),
   userId: integer('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
