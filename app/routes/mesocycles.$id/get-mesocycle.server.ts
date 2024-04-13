@@ -12,17 +12,6 @@ export async function getMesocycle(id: number, userId: number) {
         select: {
           id: true,
           name: true,
-          notes: true,
-          exercises: {
-            select: {
-              id: true,
-              exercise: { select: { name: true } },
-              sets: { select: { id: true, repRange: true } },
-            },
-            orderBy: {
-              number: 'asc',
-            },
-          },
         },
         orderBy: {
           order: 'asc',
