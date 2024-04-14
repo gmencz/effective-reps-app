@@ -3,7 +3,7 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from '@remix-run/node';
-import { getSession, sessionStorage } from '~/utils/sessions.server';
+import { getSession, sessionStorage } from '~/shared/sessions.server';
 import { checkCredentials } from './check-credentials.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {

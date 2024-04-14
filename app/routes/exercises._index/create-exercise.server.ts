@@ -1,4 +1,4 @@
-import { prisma } from '~/utils/prisma.server';
+import { prisma } from '~/shared/prisma.server';
 
 export type NewExercise = {
   name: string;

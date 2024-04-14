@@ -1,4 +1,4 @@
-import { prisma } from '~/utils/prisma.server';
+import { prisma } from '~/shared/prisma.server';
 
 export async function getDay(id: number, userId: number) {
   return prisma.mesocycleDay.findFirst({
@@ -19,7 +19,6 @@ export async function getDay(id: number, userId: number) {
               id: true,
               number: true,
               repRange: true,
-              weight: true,
               rir: true,
               restSeconds: true,
               notes: true,
@@ -28,6 +27,15 @@ export async function getDay(id: number, userId: number) {
         },
         orderBy: {
           number: 'asc',
+        },
+      },
+      trainingSessions: {
+        select: {
+          id: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       },
     },

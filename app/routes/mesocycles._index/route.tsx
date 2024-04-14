@@ -1,19 +1,19 @@
 import { json, redirect, useLoaderData } from '@remix-run/react';
 import { CreateMesocycleForm } from './create-mesocycle-form';
 import { createMesocycle } from './create-mesocycle.server';
-import { requireUserId, sessionStorage } from '~/utils/sessions.server';
+import { requireUser, sessionStorage } from '~/shared/sessions.server';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { getMesocycles } from './get-mesocycles.server';
 import { MesocyclesList } from './mesocycles-list';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { userId } = await requireUserId(request);
+  const { userId } = await requireUser(request);
   const mesocycles = await getMesocycles(userId);
   return json({ mesocycles });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { session, userId } = await requireUserId(request);
+  const { session, userId } = await requireUser(request);
   const formData = await request.formData();
   const mesocycleName = formData.get('mesocycleName');
   if (typeof mesocycleName !== 'string') {

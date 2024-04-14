@@ -1,8 +1,7 @@
-import { prisma } from '~/utils/prisma.server';
+import { prisma } from '~/shared/prisma.server';
 
 type NewSet = {
   repRange: string;
-  weight: number | null;
   rir: number;
   restSeconds: number | null;
   notes: string | null;
@@ -37,7 +36,6 @@ export async function addSet(
       number,
       repRange: newSet.repRange,
       rir: newSet.rir,
-      weight: newSet.weight,
       restSeconds: newSet.restSeconds,
       notes: newSet.notes,
       exerciseId,

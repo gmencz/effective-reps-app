@@ -1,4 +1,4 @@
-import { prisma } from '~/utils/prisma.server';
+import { prisma } from '~/shared/prisma.server';
 
 export async function getExercisesForSelect(userId: number) {
   return prisma.exercise.findMany({

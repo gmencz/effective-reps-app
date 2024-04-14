@@ -19,7 +19,6 @@ export function ExercisesList() {
               <tr>
                 <th>Set</th>
                 <th>Rep range</th>
-                <th>Weight</th>
                 <th>RIR</th>
                 <th>Rest seconds</th>
                 <th>Notes</th>
@@ -30,7 +29,6 @@ export function ExercisesList() {
                 <tr key={set.id}>
                   <td>{set.number}</td>
                   <td>{set.repRange}</td>
-                  <td>{set.weight}</td>
                   <td>{set.rir}</td>
                   <td>{set.restSeconds}</td>
                   <td>{set.notes}</td>

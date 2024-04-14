@@ -6,7 +6,7 @@ import {
   redirect,
   useLoaderData,
 } from '@remix-run/react';
-import { requireUserId } from '~/utils/sessions.server';
+import { requireUser } from '~/shared/sessions.server';
 import { getMesocycle } from './get-mesocycle.server';
 
 function getIdFromParams(params: Params<string>) {
@@ -24,7 +24,7 @@ function getIdFromParams(params: Params<string>) {
 }
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { userId } = await requireUserId(request);
+  const { userId } = await requireUser(request);
   const id = getIdFromParams(params);
   const mesocycle = await getMesocycle(id, userId);
   if (!mesocycle) {

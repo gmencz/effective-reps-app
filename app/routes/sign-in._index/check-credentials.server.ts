@@ -1,4 +1,4 @@
-import { prisma } from '~/utils/prisma.server';
+import { prisma } from '~/shared/prisma.server';
 import bcrypt from 'bcryptjs';
 
 export async function checkCredentials(email: string, password: string) {

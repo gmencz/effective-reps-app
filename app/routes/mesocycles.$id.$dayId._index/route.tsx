@@ -1,18 +1,19 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { redirect } from 'react-router';
-import { requireUserId, sessionStorage } from '~/utils/sessions.server';
+import { requireUser, sessionStorage } from '~/shared/sessions.server';
 import { getDay } from './get-day';
 import { getExercisesForSelect } from './get-exercises-for-select.server';
 import { AddExerciseForm } from './add-exercise-form';
-import { parseNumberParam } from '~/utils/requests.server';
+import { parseNumberParam } from '~/shared/requests.server';
 import { addExercise } from './add-exercise.server';
 import { ExercisesList } from './exercises-list';
-import { StartSessionForm } from './start-session-form';
 import { addSet } from './add-set.server';
+import { createTrainingSession } from './create-training-session.server';
+import { TrainingSessionsList } from './training-sessions-list';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { userId } = await requireUserId(request);
+  const { userId } = await requireUser(request);
   const id = parseNumberParam(params.dayId);
   if (!id) {
     throw redirect('/mesocycles');
@@ -40,7 +41,7 @@ export enum ActionIntent {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { userId, session } = await requireUserId(request);
+  const { userId, session } = await requireUser(request);
   const id = parseNumberParam(params.dayId);
   if (!id) {
     throw redirect('/mesocycles');
@@ -81,17 +82,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
         });
       }
 
-      return redirect(`/mesocycles/${mesocycleId}/${id}`, {
-        headers: {
-          'Set-Cookie': await sessionStorage.commitSession(session),
-        },
-      });
+      return redirect(`/mesocycles/${mesocycleId}/${id}`);
     }
 
     case ActionIntent.AddSet: {
       const exerciseId = Number(formData.get('exerciseId'));
       const repRange = formData.get('repRange');
-      const weight = Number(formData.get('weight'));
       const rir = Number(formData.get('rir'));
       const restSeconds = Number(formData.get('restSeconds'));
       const notes = formData.get('notes');
@@ -127,7 +123,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
         await addSet(userId, id, exerciseId, {
           notes: notes as string | null,
           repRange: repRange,
-          weight: Number.isNaN(weight) ? null : weight,
           restSeconds: Number.isNaN(restSeconds) ? null : restSeconds,
           rir: rir,
         });
@@ -141,21 +136,22 @@ export async function action({ request, params }: ActionFunctionArgs) {
         });
       }
 
-      return redirect(`/mesocycles/${mesocycleId}/${id}`, {
-        headers: {
-          'Set-Cookie': await sessionStorage.commitSession(session),
-        },
-      });
+      return redirect(`/mesocycles/${mesocycleId}/${id}`);
     }
 
     case ActionIntent.StartSession: {
-      // TODO
-
-      return redirect(`/mesocycles/${mesocycleId}/${id}`, {
-        headers: {
-          'Set-Cookie': await sessionStorage.commitSession(session),
-        },
-      });
+      try {
+        const trainingSessionId = await createTrainingSession(userId, id);
+        return redirect(`/training-sessions/${trainingSessionId}`);
+      } catch (error) {
+        console.error('startTrainingSession() had an unexpected error', error);
+        session.flash('error', 'Something went wrong starting the session');
+        return redirect(`/mesocycles/${mesocycleId}/${id}`, {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        });
+      }
     }
 
     default:
@@ -175,8 +171,7 @@ export default function MesocycleDay() {
     <>
       <h1>{day.name}</h1>
       <p>{day.notes}</p>
-
-      <StartSessionForm />
+      <TrainingSessionsList />
       <AddExerciseForm />
       <ExercisesList />
     </>

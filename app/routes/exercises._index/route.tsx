@@ -1,19 +1,19 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json, redirect, useLoaderData } from '@remix-run/react';
-import { requireUserId, sessionStorage } from '~/utils/sessions.server';
+import { requireUser, sessionStorage } from '~/shared/sessions.server';
 import { getExercises } from './get-exercises.server';
 import { createExercise } from './create-exercise.server';
 import { CreateExerciseForm } from './create-exercise-form';
 import { ExercisesList } from './exercises-list';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { userId } = await requireUserId(request);
+  const { userId } = await requireUser(request);
   const exercises = await getExercises(userId);
   return json({ exercises });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { userId, session } = await requireUserId(request);
+  const { userId, session } = await requireUser(request);
   const formData = await request.formData();
   const exerciseName = formData.get('exerciseName');
   if (typeof exerciseName !== 'string') {

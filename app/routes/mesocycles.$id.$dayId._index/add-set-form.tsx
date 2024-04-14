@@ -22,9 +22,6 @@ export function AddSetForm({ exerciseId }: Props) {
         placeholder="4-8"
       />
 
-      <label htmlFor="weight">Weight (optional)</label>
-      <input type="number" name="weight" id="weight" />
-
       <label htmlFor="rir">RIR</label>
       <input type="number" required name="rir" id="rir" placeholder="1" />
 

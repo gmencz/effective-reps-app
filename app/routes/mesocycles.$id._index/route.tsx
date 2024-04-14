@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
-import { requireUserId, sessionStorage } from '~/utils/sessions.server';
+import { requireUser, sessionStorage } from '~/shared/sessions.server';
 import { Params } from '@remix-run/react';
 import { DaysList } from './days-list';
 import { addDay } from './add-day.server';
@@ -24,7 +24,7 @@ export enum ActionIntent {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { userId, session } = await requireUserId(request);
+  const { userId, session } = await requireUser(request);
   const id = getIdFromParams(params);
   const formData = await request.formData();
   const intent = formData.get('_intent');

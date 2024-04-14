@@ -20,29 +20,31 @@ model Mesocycle {
 }
 
 model MesocycleDay {
-  id          Int                    @id @default(autoincrement())
-  name        String
-  order       Int
-  notes       String?
-  mesocycle   Mesocycle              @relation(fields: [mesocycleId], references: [id])
-  mesocycleId Int                    @map("mesocycle_id")
-  exercises   MesocycleDayExercise[]
-  createdAt   DateTime               @default(now()) @map("created_at")
+  id               Int                    @id @default(autoincrement())
+  name             String
+  order            Int
+  notes            String?
+  mesocycle        Mesocycle              @relation(fields: [mesocycleId], references: [id])
+  mesocycleId      Int                    @map("mesocycle_id")
+  exercises        MesocycleDayExercise[]
+  createdAt        DateTime               @default(now()) @map("created_at")
+  trainingSessions TrainingSession[]
 
   @@unique([name, mesocycleId])
   @@map("mesocycles_days")
 }
 
 model MesocycleDayExercise {
-  id         Int                       @id @default(autoincrement())
-  number     Int
-  notes      String?
-  day        MesocycleDay              @relation(fields: [dayId], references: [id])
-  dayId      Int                       @map("day_id")
-  exercise   Exercise                  @relation(fields: [exerciseId], references: [id])
-  exerciseId Int                       @map("exercise_id")
-  sets       MesocycleDayExerciseSet[]
-  createdAt  DateTime                  @default(now()) @map("created_at")
+  id                        Int                       @id @default(autoincrement())
+  number                    Int
+  notes                     String?
+  day                       MesocycleDay              @relation(fields: [dayId], references: [id])
+  dayId                     Int                       @map("day_id")
+  exercise                  Exercise                  @relation(fields: [exerciseId], references: [id])
+  exerciseId                Int                       @map("exercise_id")
+  sets                      MesocycleDayExerciseSet[]
+  createdAt                 DateTime                  @default(now()) @map("created_at")
+  trainingSessionsExercises TrainingSessionExercise[]
 
   @@map("mesocycles_days_exercises")
 }
@@ -51,7 +53,6 @@ model MesocycleDayExerciseSet {
   id          Int                  @id @default(autoincrement())
   number      Int
   repRange    String               @map("rep_range")
-  weight      Float?
   rir         Int
   restSeconds Int?                 @map("rest_seconds")
   notes       String?
@@ -63,25 +64,71 @@ model MesocycleDayExerciseSet {
 }
 
 model Exercise {
-  id             Int                    @id @default(autoincrement())
-  name           String
-  unilateral     Boolean                @default(false)
-  user           User                   @relation(fields: [userId], references: [id])
-  userId         Int                    @map("user_id")
-  mesocyclesDays MesocycleDayExercise[]
-  createdAt      DateTime               @default(now()) @map("created_at")
+  id               Int                       @id @default(autoincrement())
+  name             String
+  unilateral       Boolean                   @default(false)
+  user             User                      @relation(fields: [userId], references: [id])
+  userId           Int                       @map("user_id")
+  mesocyclesDays   MesocycleDayExercise[]
+  createdAt        DateTime                  @default(now()) @map("created_at")
+  trainingSessions TrainingSessionExercise[]
 
   @@unique([name, userId])
   @@map("exercises")
 }
 
 model User {
-  id           Int         @id @default(autoincrement())
-  email        String      @unique
-  passwordHash String      @map("password_hash")
-  exercises    Exercise[]
-  mesocycles   Mesocycle[]
-  createdAt    DateTime    @default(now()) @map("created_at")
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  passwordHash     String            @map("password_hash")
+  exercises        Exercise[]
+  mesocycles       Mesocycle[]
+  trainingSessions TrainingSession[] @relation("TrainingSessions")
+  createdAt        DateTime          @default(now()) @map("created_at")
 
   @@map("users")
+}
+
+model TrainingSession {
+  id             Int                       @id @default(autoincrement())
+  notes          String?
+  exercises      TrainingSessionExercise[]
+  mesocycleDay   MesocycleDay              @relation(fields: [mesocycleDayId], references: [id])
+  mesocycleDayId Int                       @map("mesocycle_day_id")
+  createdAt      DateTime                  @default(now()) @map("created_at")
+  user           User                      @relation("TrainingSessions", fields: [userId], references: [id])
+  userId         Int                       @map("user_id")
+
+  @@map("training_sessions")
+}
+
+model TrainingSessionExercise {
+  id                     Int                          @id @default(autoincrement())
+  number                 Int
+  notes                  String?
+  exercise               Exercise                     @relation(fields: [exerciseId], references: [id])
+  exerciseId             Int                          @map("exercise_id")
+  sets                   TrainingSessionExerciseSet[]
+  mesocycleDayExercise   MesocycleDayExercise?        @relation(fields: [mesocycleDayExerciseId], references: [id])
+  mesocycleDayExerciseId Int?                         @map("mesocycle_day_exercise")
+  createdAt              DateTime                     @default(now()) @map("created_at")
+  trainingSession        TrainingSession              @relation(fields: [trainingSessionId], references: [id])
+  trainingSessionId      Int                          @map("training_session_id")
+
+  @@map("training_sessions_exercises")
+}
+
+model TrainingSessionExerciseSet {
+  id          Int                      @id @default(autoincrement())
+  number      Int
+  weight      Int?
+  reps        Int?
+  rir         Int?
+  restSeconds Int?                     @map("rest_seconds")
+  notes       String?
+  createdAt   DateTime                 @default(now()) @map("created_at")
+  exercise    TrainingSessionExercise? @relation(fields: [exerciseId], references: [id])
+  exerciseId  Int?                     @map("exercise_id")
+
+  @@map("training_sessions_exercises_sets")
 }

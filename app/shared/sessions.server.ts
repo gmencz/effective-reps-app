@@ -36,10 +36,7 @@ export async function getSession(request: Request) {
   return session;
 }
 
-export async function requireUserId(
-  request: Request,
-  redirectUrl = '/sign-in',
-) {
+export async function requireUser(request: Request, redirectUrl = '/sign-in') {
   const session = await getSession(request);
   const userId = session.get('userId');
 

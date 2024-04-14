@@ -1,6 +1,6 @@
 import { LoaderFunctionArgs, type MetaFunction } from '@remix-run/node';
 import { Link } from '@remix-run/react';
-import { requireUserId } from '~/utils/sessions.server';
+import { requireUser } from '~/shared/sessions.server';
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,7 +10,7 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { userId } = await requireUserId(request);
+  const { userId } = await requireUser(request);
   return { userId };
 }
 
