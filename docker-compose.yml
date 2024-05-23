@@ -1,14 +1,16 @@
-version: '3'
-
 services:
   db:
     image: postgres
     restart: always
     environment:
-      POSTGRES_DB: effective_reps_db
-      POSTGRES_USER: effective_reps_user
-      POSTGRES_PASSWORD: effective_reps_pw
+      POSTGRES_DB: srm_hypertrophy_app_db
+      POSTGRES_USER: srm_hypertrophy_app_user
+      POSTGRES_PASSWORD: srm_hypertrophy_app_pw
     ports:
       - '5432:5432'
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
+    driver: local
