@@ -4,16 +4,45 @@ import {
   AnimatedDialogProps,
 } from '../../components/animated-dialog';
 import { FaCheck, FaPlus } from 'react-icons/fa';
-import { useState } from 'react';
-import { loader } from './route';
-import { useLoaderData } from '@remix-run/react';
+import { useRef, useState } from 'react';
+import { action, loader } from './route';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+} from '@remix-run/react';
 import clsx from 'clsx';
+
+import { getInputProps, useForm } from '@conform-to/react';
+import { parseWithZod } from '@conform-to/zod';
+import { z } from 'zod';
+import { useDebounceSubmit } from 'remix-utils/use-debounce-submit';
 
 interface AddExercisesDialogProps extends AnimatedDialogProps {}
 
+const schema = z.object({
+  query: z.string().optional(),
+});
+
 export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
   const { exercises } = useLoaderData<typeof loader>();
+  const lastResult = useActionData<typeof action>();
   const [selectedIds, setSelectedIds] = useState(new Set<string>());
+  const submit = useDebounceSubmit();
+  const [searchParams] = useSearchParams();
+
+  const [form, fields] = useForm({
+    lastResult,
+    onValidate({ formData }) {
+      console.log('validate :D');
+      return parseWithZod(formData, { schema });
+    },
+    shouldValidate: 'onBlur',
+    shouldRevalidate: 'onInput',
+  });
+
+  const formRef = useRef(null);
 
   const isSelected = (id: string) => selectedIds.has(id);
 
@@ -32,15 +61,49 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
   };
 
   return (
-    <AnimatedDialog isOpen={isOpen} close={close}>
+    <AnimatedDialog
+      isOpen={isOpen}
+      close={() => {
+        const formData = new FormData();
+        formData.append('query', '');
+        submit(formData, {
+          debounceTimeout: 500,
+          method: 'get',
+          fetcherKey: 'exercises',
+        });
+        close();
+      }}
+    >
       <div className="flex flex-col max-h-screen">
         <div className="text-center">
           <DialogTitle as="h3" className="text-base font-semibold text-white">
             Add Exercises
           </DialogTitle>
         </div>
-
-        <ol className="mt-6 rounded-xl overflow-y-auto mb-6 bg-zinc-700 ">
+        <div>
+          <Form
+            method="get"
+            id={form.id}
+            onSubmit={form.onSubmit}
+            onChange={(event) => {
+              submit(event.currentTarget, {
+                debounceTimeout: 350,
+                fetcherKey: 'exercises',
+              });
+            }}
+            ref={formRef}
+          >
+            <input
+              {...getInputProps(fields.query, {
+                type: 'text',
+              })}
+              defaultValue={searchParams.get('query') || ''}
+              placeholder="search ..."
+              className="  border-t-0 border-x-0 border-b-zinc-600 pt-0 pb-2 border-b-2 bg-transparent text-white w-full text-xl font-semibold focus:outline-none focus:ring-0 focus:border-b-orange-500 px-2"
+            />
+          </Form>
+        </div>
+        <ol className="mt-6 rounded-xl overflow-y-auto mb-6 bg-zinc-700  ">
           {exercises.map((exercise) => (
             <li key={exercise.id}>
               <button
@@ -57,8 +120,12 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
                 <span className="bg-zinc-600 text-zinc-400 px-4 py-1.5 rounded-xl text-2xl font-semibold">
                   {exercise.name.charAt(0)}
                 </span>
-
-                <span className="text-left text-white">{exercise.name}</span>
+                <div className="flex  flex-col ">
+                  <span className=" text-left text-gray-400 text-sm">
+                    {exercise.muscleGroup?.name}
+                  </span>
+                  <span className="text-left text-white">{exercise.name}</span>
+                </div>
 
                 <div className="ml-auto">
                   <FaCheck
