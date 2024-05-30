@@ -13,18 +13,15 @@ async function main() {
       { name: 'Triceps' },
       { name: 'Forearms' },
       { name: 'Abs' },
-      { name: 'Obliques' },
       { name: 'Quads' },
       { name: 'Hamstrings' },
       { name: 'Glutes' },
       { name: 'Calves' },
-      { name: 'Trapezius' },
-      { name: 'Lats' }, // Latissimus Dorsi
-      { name: 'Hip Flexors' },
+      { name: 'Traps' },
+      { name: 'Lats' },
       { name: 'Adductors' },
       { name: 'Abductors' },
       { name: 'Lower Back' },
-      { name: 'Serratus Anterior' },
     ],
   });
   const dev = await prisma.user.create({

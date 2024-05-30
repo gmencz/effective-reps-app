@@ -35,7 +35,6 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
   const [form, fields] = useForm({
     lastResult,
     onValidate({ formData }) {
-      console.log('validate :D');
       return parseWithZod(formData, { schema });
     },
     shouldValidate: 'onBlur',

@@ -11,9 +11,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query');
-  const [exercises] = await Promise.all([
-    getExercises({ userId, query: query || undefined }),
-  ]);
+  const exercises = await getExercises({ userId, query: query || undefined });
+
   if (!exercises) {
     throw redirect('/app/templates');
   }
