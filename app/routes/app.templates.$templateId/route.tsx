@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { parseWithZod } from '@conform-to/zod';
 import { getInputProps, useForm } from '@conform-to/react';
 import { AddExercisesDialog } from './add-exercises-dialog';
-import { getExercises } from './get-exercises.server';
+import { getExercises } from '../app.exercises._index/get-exercises.server';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { userId } = await requireUser(request);
@@ -30,13 +30,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       templateId,
       userId,
     }),
-    getExercises({ userId, query }),
+    getExercises({ userId, query: query || undefined }),
   ]);
-
   if (!template) {
     throw redirect('/app/templates');
   }
-
   return json({ template, exercises });
 }
 
