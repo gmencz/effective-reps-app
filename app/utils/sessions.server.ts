@@ -5,8 +5,9 @@ type SessionData = {
   userId: string;
 };
 
-type SessionFlashData = {
+export type SessionFlashData = {
   error: string;
+  success: string;
 };
 
 export type TypedSession = Session<SessionData, SessionFlashData>;
@@ -48,3 +49,5 @@ export async function requireUser(request: Request, redirectUrl = '/login') {
 
   return { userId, session };
 }
+
+export const commitSession = sessionStorage.commitSession;
