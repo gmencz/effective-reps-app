@@ -57,7 +57,7 @@ export function Input({
       </div>
 
       {hasErrors ? (
-        <p className="sr-only mt-2 text-red-600" id={errorId}>
+        <p className=" mt-2 text-red-600" id={errorId}>
           {errors}
         </p>
       ) : null}

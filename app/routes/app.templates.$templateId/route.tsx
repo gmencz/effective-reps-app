@@ -45,7 +45,7 @@ const schema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { userId } = await requireUser(request);
+  await requireUser(request);
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema });

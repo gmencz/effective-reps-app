@@ -48,7 +48,7 @@ export function TemplateDialog({
           <Form method="post" action={template.id}>
             <button
               type="submit"
-              className="flex items-center gap-x-3 bg-zinc-700 hover:bg-zinc-600 px-4 py-3 text-white font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              className="flex w-full items-center gap-x-3 bg-zinc-700 hover:bg-zinc-600 px-4 py-3 text-white font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             >
               <FaCopy className="w-4 h-4" />
               <span>Duplicate</span>

@@ -4,10 +4,11 @@ import {
   AnimatedDialogProps,
 } from '../../components/animated-dialog';
 import { FaCheck, FaPlus } from 'react-icons/fa';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { action, loader } from './route';
 import {
   Form,
+  Link,
   useActionData,
   useLoaderData,
   useSearchParams,
@@ -40,8 +41,6 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
     shouldValidate: 'onBlur',
     shouldRevalidate: 'onInput',
   });
-
-  const formRef = useRef(null);
 
   const isSelected = (id: string) => selectedIds.has(id);
 
@@ -90,7 +89,6 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
                 fetcherKey: 'exercises',
               });
             }}
-            ref={formRef}
           >
             <input
               {...getInputProps(fields.query, {
@@ -102,7 +100,13 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
             />
           </Form>
         </div>
-        <ol className="mt-6 rounded-xl overflow-y-auto mb-6 bg-zinc-700  ">
+        <Link
+          to="/app/exercises"
+          className="mt-2 hover:text-orange-200 text-orange-500 text-lg text-center"
+        >
+          All exercises
+        </Link>
+        <ol className="mt-4 rounded-xl overflow-y-auto mb-6 bg-zinc-700  ">
           {exercises.map((exercise) => (
             <li key={exercise.id}>
               <button

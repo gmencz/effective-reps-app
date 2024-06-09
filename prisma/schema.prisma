@@ -67,6 +67,7 @@ model Exercise {
   muscleGroupId String?  @map("muscle_group_id")
   exerciseTextSearch String? @map("exercise_text_search")
   @@unique([name, userId])
+  @@unique([id, userId])
   @@map("exercises")
   
 }
