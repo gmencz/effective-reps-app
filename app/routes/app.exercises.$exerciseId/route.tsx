@@ -62,11 +62,30 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json(submission.reply());
   }
 
+  const { name, muscleGroupId } = submission.value;
+
+  const exerciseExists = await getExercise({
+    userId,
+    name,
+    includeMuscleGroup: false,
+  });
+
+  if (exerciseExists) {
+    return json({
+      ...submission.reply(),
+      status: 'error' as 'error' | 'success',
+      error: { name: ['The exercise name is not unique'] } as Record<
+        string,
+        string[] | null
+      >,
+    });
+  }
+
   const updatedExercise = await updateExercise({
     userId,
     id: exerciseId,
-    name: submission.value.name,
-    muscleGroupId: submission.value.muscleGroupId,
+    name,
+    muscleGroupId,
   });
 
   if (!updatedExercise) {
