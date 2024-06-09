@@ -20,7 +20,7 @@ export function Input({
   ...props
 }: InputProps) {
   const hasErrors = !!errors?.length;
-  console.log(errors);
+
   return (
     <div className={className}>
       {label ? (
