@@ -64,13 +64,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { name, muscleGroupId } = submission.value;
 
-  const exerciseExists = await getExercise({
+  const exerciseNameExists = await getExercise({
     userId,
     name,
     includeMuscleGroup: false,
   });
 
-  if (exerciseExists) {
+  if (exerciseNameExists && exerciseNameExists.id !== exerciseId) {
     return json({
       ...submission.reply(),
       status: 'error' as 'error' | 'success',

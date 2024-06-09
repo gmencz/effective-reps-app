@@ -52,13 +52,13 @@ export async function action({ request }: ActionFunctionArgs) {
   }
   const { muscleGroupId, name } = submission.value;
 
-  const exerciseExists = await getExercise({
+  const exerciseNameExists = await getExercise({
     userId,
     name,
     includeMuscleGroup: false,
   });
 
-  if (exerciseExists) {
+  if (exerciseNameExists) {
     return json({
       ...submission.reply(),
       status: 'error' as 'error' | 'success',
