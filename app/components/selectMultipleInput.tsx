@@ -83,7 +83,6 @@ export default function SelectMultipleInput<U extends Record<string, unknown>>({
             (value.length === 0 && inputFieldList.length > 0)
           ) {
             if (value.length === 0) {
-              console.log('deleting 0');
               form.remove({
                 name: inputField.name,
                 index: 0,
