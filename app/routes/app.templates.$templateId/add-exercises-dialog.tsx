@@ -125,7 +125,7 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
                 </span>
                 <div className="flex  flex-col ">
                   <span className=" text-left text-gray-400 text-sm">
-                    {exercise.muscleGroup?.name}
+                    {exercise.mainMuscleGroup?.name}
                   </span>
                   <span className="text-left text-white">{exercise.name}</span>
                 </div>

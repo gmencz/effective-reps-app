@@ -21,11 +21,13 @@ import getMuscleGroups from '../app.exercises.$exerciseId/get-muscleGroups.serve
 import updateExercise from '../app.exercises.$exerciseId/update-exercise.server';
 
 import getExercise from '../app.exercises.$exerciseId/get-exercise.server';
-import AddExercise from './add-exercise';
+import addExercise from './add-exercise.server';
+import SelectMultipleInput from '~/components/selectMultipleInput';
 
 const schema = z.object({
   muscleGroupId: z.string().min(3),
   name: z.string().min(3),
+  secondaryMuscleGroupsIds: z.array(z.string().min(3)),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -50,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (submission.status !== 'success') {
     return json(submission.reply());
   }
-  const { muscleGroupId, name } = submission.value;
+  const { muscleGroupId, name, secondaryMuscleGroupsIds } = submission.value;
 
   const exerciseNameExists = await getExercise({
     userId,
@@ -69,7 +71,8 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 
-  const newExercise = await AddExercise({
+  const newExercise = await addExercise({
+    secondaryMuscleGroupsIds,
     name,
     muscleGroupId,
     userId,
@@ -102,6 +105,9 @@ export default function Exercise() {
     shouldValidate: 'onBlur',
     shouldRevalidate: 'onInput',
   });
+
+  const secondaryMuscleGroupsIdsFieldList =
+    fields.secondaryMuscleGroupsIds.getFieldList();
 
   return (
     <div>
@@ -145,9 +151,26 @@ export default function Exercise() {
             defaultValue={muscleGroups[0].id}
           />
         </div>
+        <div className=" border-none mt-3">
+          <label
+            className=" font-medium text-xl text-amber-600  mb-3"
+            htmlFor={fields.muscleGroupId.id}
+          >
+            Secondary Muscle Groups
+          </label>
+
+          <SelectMultipleInput
+            inputFieldList={secondaryMuscleGroupsIdsFieldList}
+            form={form}
+            inputField={fields.secondaryMuscleGroupsIds}
+            options={muscleGroups}
+            errors={fields.secondaryMuscleGroupsIds.errors}
+            errorId={fields.secondaryMuscleGroupsIds.errorId}
+          />
+        </div>
 
         <button className="mt-4 w-full flex items-center justify-center gap-x-3 bg-amber-600 text-white hover:bg-amber-500 rounded-xl font-semibold px-4 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600">
-          <span>Edit</span>
+          <span>Create</span>
         </button>
       </Form>
       <div className="mt-4">
