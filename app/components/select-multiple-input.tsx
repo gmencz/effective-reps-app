@@ -15,7 +15,7 @@ import {
   IoChevronDownCircle,
   IoClose,
 } from 'react-icons/io5';
-import { optionFromSelectInput } from './selectInput';
+import { optionFromSelectInput } from './select-input';
 
 export interface SelectMultipleInputProps<U extends Record<string, unknown>> {
   inputField: FieldMetadata<string[] | undefined, U, string[]>;
@@ -51,19 +51,14 @@ export default function SelectMultipleInput<U extends Record<string, unknown>>({
 
   useEffect(() => {
     setSelected(() => {
-      if (inputFieldList.length <= 0) {
-        return [];
-      } else {
-        return inputFieldList.map((inputFieldShard) => {
-          return {
-            id: inputFieldShard.initialValue as string,
-            name:
-              options.find(
-                (option) => option.id === inputFieldShard.initialValue,
-              )?.name || 'Unable to access the name.',
-          };
-        });
-      }
+      return inputFieldList.map((inputFieldShard) => {
+        return {
+          id: inputFieldShard.initialValue as string,
+          name:
+            options.find((option) => option.id === inputFieldShard.initialValue)
+              ?.name || 'Unable to access the name.',
+        };
+      });
     });
   }, [inputFieldList, setSelected, options]);
 

@@ -1,5 +1,5 @@
 import { prisma } from '~/utils/prisma.server';
-import getMuscleGroup from '../app.exercises.$exerciseId/get-muscleGroup.server';
+import getMuscleGroup from '../app.exercises.$exerciseId/get-muscle-group.server';
 
 export interface AddExerciseInput {
   userId: string;

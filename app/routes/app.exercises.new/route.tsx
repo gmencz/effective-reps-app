@@ -14,15 +14,15 @@ import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
 import { Input } from '~/components/input';
 
-import SelectInput from '../../components/selectInput';
+import SelectInput from '../../components/select-input';
 
-import redirectSessionFlash from '~/utils/redirectSessionFLash';
-import getMuscleGroups from '../app.exercises.$exerciseId/get-muscleGroups.server';
+import getMuscleGroups from '../app.exercises.$exerciseId/get-muscle-groups.server';
 import updateExercise from '../app.exercises.$exerciseId/update-exercise.server';
 
 import getExercise from '../app.exercises.$exerciseId/get-exercise.server';
 import addExercise from './add-exercise.server';
-import SelectMultipleInput from '~/components/selectMultipleInput';
+import SelectMultipleInput from '~/components/select-multiple-input';
+import redirectSessionFlash from '~/utils/redirect-session-flash';
 
 const schema = z.object({
   muscleGroupId: z.string().min(3),

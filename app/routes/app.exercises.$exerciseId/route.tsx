@@ -13,12 +13,12 @@ import { z } from 'zod';
 import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
 import { Input } from '~/components/input';
-import getMuscleGroups from './get-muscleGroups.server';
-import SelectInput from '../../components/selectInput';
+import getMuscleGroups from './get-muscle-groups.server';
+import SelectInput from '../../components/select-input';
 import updateExercise from './update-exercise.server';
 
-import redirectSessionFlash from '~/utils/redirectSessionFLash';
-import SelectMultipleInput from '~/components/selectMultipleInput';
+import SelectMultipleInput from '~/components/select-multiple-input';
+import redirectSessionFlash from '~/utils/redirect-session-flash';
 
 const schema = z.object({
   muscleGroupId: z.string().min(3),

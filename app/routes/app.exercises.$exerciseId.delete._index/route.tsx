@@ -1,6 +1,7 @@
 import { ActionFunctionArgs } from '@remix-run/node';
 import { prisma } from '~/utils/prisma.server';
-import redirectBackSessionFlash from '~/utils/redirectBackSessionFlash';
+import redirectBackSessionFlash from '~/utils/redirect-back-session-flash';
+
 import { requireUser } from '~/utils/sessions.server';
 
 export async function action({ request, params }: ActionFunctionArgs) {
