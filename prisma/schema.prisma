@@ -63,8 +63,9 @@ model Exercise {
   user        User?              @relation(fields: [userId], references: [id])
   userId      String?            @map("user_id")
   inTemplates TemplateExercise[]
-  muscleGroup  MuscleGroup? @relation(fields: [muscleGroupId], references: [id])
+  mainMuscleGroup  MuscleGroup? @relation( "mainMuscleGroup",fields: [muscleGroupId], references: [id])
   muscleGroupId String?  @map("muscle_group_id")
+  secondaryMuscleGroups MuscleGroup[] @relation("secondaryMuscleGroups")
   exerciseTextSearch String? @map("exercise_text_search")
   @@unique([name, userId])
   @@unique([id, userId])
@@ -75,6 +76,7 @@ model Exercise {
 model MuscleGroup {
   id String @id @default(cuid())
   name String @unique
-  inExercises    Exercise[]
+  mainInExercises    Exercise[] @relation("mainMuscleGroup")
+  SecondaryInExercises    Exercise[] @relation("secondaryMuscleGroups")
   @@map("muscle_groups")
 }

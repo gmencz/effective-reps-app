@@ -20,8 +20,11 @@ export default async function getExercise({
 }: getExerciseInputWithId | getExerciseInputWithName) {
   const include = includeMuscleGroup
     ? {
-        muscleGroup: {
+        mainMuscleGroup: {
           select: { name: true },
+        },
+        secondaryMuscleGroups: {
+          select: { name: true, id: true },
         },
       }
     : {};

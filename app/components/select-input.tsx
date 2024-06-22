@@ -12,19 +12,26 @@ import { useState } from 'react';
 import { FaCircleExclamation } from 'react-icons/fa6';
 import { IoCheckmark, IoChevronDownCircle } from 'react-icons/io5';
 
+export interface optionFromSelectInput {
+  id: string;
+  name: string;
+}
+export interface SelectInputProps<T> {
+  inputField: FieldMetadata<T>;
+  options: optionFromSelectInput[];
+  defaultValue?: optionFromSelectInput['id'];
+  errors?: string[];
+  errorId: string;
+  placeHolder?: string;
+}
+
 export default function SelectInput<T>({
   inputField,
   defaultValue,
   options,
   errors,
   errorId,
-}: {
-  inputField: FieldMetadata<T>;
-  options: { id: string; name: string }[];
-  defaultValue?: (typeof options)[0]['id'];
-  errors?: string[];
-  errorId: string;
-}) {
+}: SelectInputProps<T>) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(
     defaultValue

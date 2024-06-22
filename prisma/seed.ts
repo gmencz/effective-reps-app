@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.muscleGroup.createMany({
+  await prisma.mainMuscleGroup.createMany({
     data: [
       { name: 'Chest' },
       { name: 'Back' },
@@ -43,70 +43,70 @@ async function main() {
           {
             name: 'Technogym High Incline Smith Press',
             exerciseTextSearch: 'Technogym High Incline Smith Press Chest',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Chest' },
             },
           },
           {
             name: 'Technogym Low Incline Smith Press',
             exerciseTextSearch: 'Technogym Low Incline Smith Press Chest',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Chest' },
             },
           },
           {
             name: 'Hammer Strength SA Pulldown',
             exerciseTextSearch: 'Hammer Strength SA Pulldown Biceps',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Biceps' },
             },
           },
           {
             name: 'Pure Strength Stiff Legged Deadlift',
             exerciseTextSearch: 'Pure Strength Stiff Legged Deadlift Glutes',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Glutes' },
             },
           },
           {
             name: 'Pure Strength Hack Squat',
             exerciseTextSearch: 'Pure Strength Hack Squat Quads',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Quads' },
             },
           },
           {
             name: 'Barbell Row',
             exerciseTextSearch: 'Barbell Row Back',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Back' },
             },
           },
           {
             name: 'Stabilized Dumbbell Curl',
             exerciseTextSearch: 'Stabilized Dumbbell Curl Biceps',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Biceps' },
             },
           },
           {
             name: 'Push ups',
             exerciseTextSearch: 'Push ups Chest',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Chest' },
             },
           },
           {
             name: 'Chin ups',
             exerciseTextSearch: 'Chin ups Back',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Back' },
             },
           },
           {
             name: 'Pull ups',
             exerciseTextSearch: 'Pull ups Back',
-            muscleGroup: {
+            mainMuscleGroup: {
               connect: { name: 'Back' },
             },
           },

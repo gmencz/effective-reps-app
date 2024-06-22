@@ -13,15 +13,17 @@ import { z } from 'zod';
 import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
 import { Input } from '~/components/input';
-import getMuscleGroups from './get-muscleGroups.server';
-import SelectInput from '../../components/selectInput';
+import getMuscleGroups from './get-muscle-groups.server';
+import SelectInput from '../../components/select-input';
 import updateExercise from './update-exercise.server';
 
-import redirectSessionFlash from '~/utils/redirectSessionFLash';
+import SelectMultipleInput from '~/components/select-multiple-input';
+import redirectSessionFlash from '~/utils/redirect-session-flash';
 
 const schema = z.object({
   muscleGroupId: z.string().min(3),
   name: z.string().min(3),
+  secondaryMuscleGroupsIds: z.array(z.string().min(3)),
 });
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -34,7 +36,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   const [exercise, muscleGroups] = await Promise.all([
-    getExercise({ userId, id: exerciseId, includeMuscleGroup: false }),
+    getExercise({ userId, id: exerciseId, includeMuscleGroup: true }),
     getMuscleGroups(),
   ]);
 
@@ -62,15 +64,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json(submission.reply());
   }
 
-  const { name, muscleGroupId } = submission.value;
+  const { name, muscleGroupId, secondaryMuscleGroupsIds } = submission.value;
 
-  const exerciseNameExists = await getExercise({
+  const exercisePrevToUpdate = await getExercise({
     userId,
     name,
-    includeMuscleGroup: false,
+    includeMuscleGroup: true,
   });
 
-  if (exerciseNameExists && exerciseNameExists.id !== exerciseId) {
+  if (exercisePrevToUpdate && exercisePrevToUpdate.id !== exerciseId) {
     return json({
       ...submission.reply(),
       status: 'error' as 'error' | 'success',
@@ -86,6 +88,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     id: exerciseId,
     name,
     muscleGroupId,
+    secondaryMuscleGroupsIds,
+    secondaryMuscleGroupsPrevToUpdate:
+      exercisePrevToUpdate?.secondaryMuscleGroups,
   });
 
   if (!updatedExercise) {
@@ -114,7 +119,15 @@ export default function Exercise() {
     },
     shouldValidate: 'onBlur',
     shouldRevalidate: 'onInput',
+    defaultValue: {
+      secondaryMuscleGroupsIds: exercise.secondaryMuscleGroups.map(
+        (secondaryMuscleGroup) => secondaryMuscleGroup.id,
+      ),
+    },
   });
+
+  const secondaryMuscleGroupsIdsFieldList =
+    fields.secondaryMuscleGroupsIds.getFieldList();
 
   return (
     <div>
@@ -157,6 +170,23 @@ export default function Exercise() {
             options={muscleGroups}
             errors={fields.muscleGroupId.errors}
             errorId={fields.muscleGroupId.errorId}
+          />
+        </div>
+        <div className=" border-none mt-3">
+          <label
+            className=" font-medium text-xl text-amber-600  mb-3"
+            htmlFor={fields.muscleGroupId.id}
+          >
+            Secondary Muscle Groups
+          </label>
+
+          <SelectMultipleInput
+            inputFieldList={secondaryMuscleGroupsIdsFieldList}
+            form={form}
+            inputField={fields.secondaryMuscleGroupsIds}
+            options={muscleGroups}
+            errors={fields.secondaryMuscleGroupsIds.errors}
+            errorId={fields.secondaryMuscleGroupsIds.errorId}
           />
         </div>
 

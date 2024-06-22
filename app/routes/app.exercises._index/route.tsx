@@ -120,7 +120,7 @@ export default function Exercises() {
                 <div className="flex-col   text-left  ">
                   <p>{exercise.name}</p>
                   <p className="ml-1 text-base text-gray-300 ">
-                    {exercise.muscleGroup?.name}
+                    {exercise.mainMuscleGroup?.name}
                   </p>
                 </div>
 

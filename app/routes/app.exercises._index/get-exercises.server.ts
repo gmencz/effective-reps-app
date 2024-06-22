@@ -28,7 +28,7 @@ export function getExercises(input: GetExercisesInput) {
     select: {
       id: true,
       name: true,
-      muscleGroup: { select: { name: true } },
+      mainMuscleGroup: { select: { name: true } },
     },
     orderBy: {
       name: 'asc',
