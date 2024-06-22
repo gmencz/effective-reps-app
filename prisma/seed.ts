@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.mainMuscleGroup.createMany({
+  await prisma.muscleGroup.createMany({
     data: [
       { name: 'Chest' },
       { name: 'Back' },
@@ -24,6 +24,7 @@ async function main() {
       { name: 'Lower Back' },
     ],
   });
+
   const dev = await prisma.user.create({
     data: {
       email: 'dev@test.com',

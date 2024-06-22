@@ -8,17 +8,17 @@ import { useState } from 'react';
 import { action, loader } from './route';
 import {
   Form,
-  Link,
   useActionData,
   useLoaderData,
   useSearchParams,
 } from '@remix-run/react';
 import clsx from 'clsx';
 
-import { getInputProps, useForm } from '@conform-to/react';
+import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
 import { z } from 'zod';
 import { useDebounceSubmit } from 'remix-utils/use-debounce-submit';
+import { SearchInput } from '~/components/search-input';
 
 interface AddExercisesDialogProps extends AnimatedDialogProps {}
 
@@ -78,34 +78,20 @@ export function AddExercisesDialog({ isOpen, close }: AddExercisesDialogProps) {
             Add Exercises
           </DialogTitle>
         </div>
-        <div>
-          <Form
-            method="get"
-            id={form.id}
-            onSubmit={form.onSubmit}
-            onChange={(event) => {
-              submit(event.currentTarget, {
-                debounceTimeout: 350,
-                fetcherKey: 'exercises',
-              });
-            }}
-          >
-            <input
-              {...getInputProps(fields.query, {
-                type: 'text',
-              })}
-              defaultValue={searchParams.get('query') || ''}
-              placeholder="search ..."
-              className="  border-t-0 border-x-0 border-b-zinc-600 pt-0 pb-2 border-b-2 bg-transparent text-white w-full text-xl font-semibold focus:outline-none focus:ring-0 focus:border-b-orange-500 px-2"
-            />
-          </Form>
-        </div>
-        <Link
-          to="/app/exercises"
-          className="mt-2 hover:text-orange-200 text-orange-500 text-lg text-center"
+        <Form
+          className="mt-6"
+          method="get"
+          id={form.id}
+          onSubmit={form.onSubmit}
+          onChange={(event) => {
+            submit(event.currentTarget, {
+              debounceTimeout: 350,
+              fetcherKey: 'exercises',
+            });
+          }}
         >
-          All exercises
-        </Link>
+          <SearchInput field={fields.query} />
+        </Form>
         <ol className="mt-4 rounded-xl overflow-y-auto mb-6 bg-zinc-700  ">
           {exercises.map((exercise) => (
             <li key={exercise.id}>
